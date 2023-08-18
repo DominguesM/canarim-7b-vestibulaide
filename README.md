@@ -1,6 +1,6 @@
 # `Canarim-7B-VestibulAide`
 
-Para mais detalhes sobre o modelo, exemplos de teste de desempenho, conjunto de dados e processo de treinamento, visite: [**canar.im**](https://canar.im/) ou [**nlp.rocks**]( https://nlp.rocks/).
+Para mais detalhes sobre o modelo, exemplos de teste de desempenho, conjunto de dados e processo de treinamento, visite: [**canar.im**](https://canar.im/) ou [**nlp.rocks**](https://nlp.rocks/).
 
 ## Descrição do modelo
 
@@ -74,7 +74,7 @@ sequences = pipe(
 ```
 
 Resposta do modelo:
-    
+
 ```
 Resolução:
 
@@ -91,29 +91,50 @@ o governo anterior.
 
 Os dados utilizados para treinar o modelo consistem em uma ampla variedade de provas de vestibulares brasileiros, abrangendo vários anos e edições de mais de 15 vestibulares distintos. Essa coleção diversificada de dados de diferentes fontes proporciona uma compreensão abrangente das características e complexidade das questões de vestibulares ao longo do tempo. Cada conjunto de dados foi cuidadosamente processado e incorporado ao treinamento do modelo, garantindo representatividade das questões encontradas em vestibulares reais.
 
-| Universidade | Ano do Vestibular | Quantidade de Questões |
-| ------ | --- | ---------- |
-| Fatec | 2023, 2020, 2019, 2019 (+ 23 provas) | 1253 |
-| Alberteinstein | 2023, 2019, 2016, 2016 (+ 5 provas) | 385 |
-| Unifesp | 2023, 2023, 2019, 2019 (+ 36 provas) | 1255 |
-| Famerp | 2023, 2023, 2019, 2019 (+ 12 provas) | 659 |
-| Famema | 2023, 2019, 2018, 2022 (+ 2 provas) | 199 |
-| Unicamp | 2023, 2023, 2023, 2021 (+ 74 provas) | 1637 |
-| Pasusp | 2009 | 46 |
-| Fgv-sp | 2020, 2019, 2019, 2018 (+ 57 provas) | 2699 |
-| Fmabc | 2023, 2018, 2022, 2021 (+ 1 provas) | 365 |
-| Mackenzie | 2019, 2017, 2015, 2013 (+ 38 provas) | 1329 |
-| Insper | 2015, 2014, 2014, 2016 (+ 1 provas) | 127 |
-| Pucsp | 2020, 2018, 2015, 2013 (+ 20 provas) | 1220 |
-| Fuvest | 2011, 2011, 2011, 2009 (+ 78 provas) | 2059 |
-| Unip | 2023, 2022 | 90 |
-| Ita | 2015, 2015, 2015, 2015 (+ 27 provas) | 748 |
-| Enem | 2022, 2022, 2022, 2022 (+ 26 provas) | 2388 |
-| Santacasa | 2023, 2023, 2019, 2019 (+ 8 provas) | 532 |
-| Unesp | 2002, 2002, 2012, 2010 (+ 17 provas) | 775 |
+| Universidade   | Ano do Vestibular                    | Quantidade de Questões |
+| -------------- | ------------------------------------ | ---------------------- |
+| Fatec          | 2023, 2020, 2019, 2019 (+ 23 provas) | 1253                   |
+| Alberteinstein | 2023, 2019, 2016, 2016 (+ 5 provas)  | 385                    |
+| Unifesp        | 2023, 2023, 2019, 2019 (+ 36 provas) | 1255                   |
+| Famerp         | 2023, 2023, 2019, 2019 (+ 12 provas) | 659                    |
+| Famema         | 2023, 2019, 2018, 2022 (+ 2 provas)  | 199                    |
+| Unicamp        | 2023, 2023, 2023, 2021 (+ 74 provas) | 1637                   |
+| Pasusp         | 2009                                 | 46                     |
+| Fgv-sp         | 2020, 2019, 2019, 2018 (+ 57 provas) | 2699                   |
+| Fmabc          | 2023, 2018, 2022, 2021 (+ 1 provas)  | 365                    |
+| Mackenzie      | 2019, 2017, 2015, 2013 (+ 38 provas) | 1329                   |
+| Insper         | 2015, 2014, 2014, 2016 (+ 1 provas)  | 127                    |
+| Pucsp          | 2020, 2018, 2015, 2013 (+ 20 provas) | 1220                   |
+| Fuvest         | 2011, 2011, 2011, 2009 (+ 78 provas) | 2059                   |
+| Unip           | 2023, 2022                           | 90                     |
+| Ita            | 2015, 2015, 2015, 2015 (+ 27 provas) | 748                    |
+| Enem           | 2022, 2022, 2022, 2022 (+ 26 provas) | 2388                   |
+| Santacasa      | 2023, 2023, 2019, 2019 (+ 8 provas)  | 532                    |
+| Unesp          | 2002, 2002, 2012, 2010 (+ 17 provas) | 775                    |
 
 Para ver a lista completa dos anos e provas utilizadas, acesse a [lista completa de vestibulares]().
 
+## Desempenho
+
+O desempenho do modelo foi avaliado de duas formas: uma relacionada à capacidade de sugerir a alternativa correta e outra à eficácia da resolução na ajuda ao estudante a encontrar a alternativa correta em questões de múltipla escolha.
+
+### Sugestão de alternativa correta
+
+A primeira métrica avalia a precisão do modelo na sugestão da alternativa correta em questões de múltipla escolha. Nesse contexto, o modelo é considerado bem-sucedido quando a alternativa segerida corresponde à alternativa correta da questão.
+
+| Prova utilizada | Número total de questões analisadas | Acurácia |
+| --------------- | ----------------------------------- | -------- |
+| ENEM 2022       | 37                                  | 43 %     |
+| FATEC 2023      | 11                                  | 27%      |
+
+## Correspondência com a Resolução
+
+A segunda métrica centra-se na correspondência entre a resolução gerada pelo modelo e a alternativa correta da questão. Isso inclui não apenas a resolução da questão, mas também a capacidade do modelo em fornecer explicações claras e úteis que permitam ao estudante compreender e chegar à alternativa correta. Essa métrica mede a eficácia da resolução gerada pelo modelo em auxiliar o estudante em todo o processo de compreensão e resolução da questão
+
+| Prova utilizada | Número total de questões analisadas | Acurácia    |
+| --------------- | ----------------------------------- | ----------- |
+| ENEM 2022       | 77                                  | **75,32 %** |
+| FATEC 2023      | 49                                  | 59,18 %     |
 
 ## Uso e Limitações
 
@@ -135,12 +156,12 @@ Estou comprometido em investir tempo e esforço para melhorar a qualidade das su
 
 Agradeço a compreensão de todos os usuários do modelo e valorizo o feedback de todos. Se você tiver alguma sugestão ou comentário, não hesite em entrar em contato comigo.
 
-##  Como citar
+## Como citar
 
 ```bibtex
-@misc{Canarim7BVestibulAide, 
-    url    = {[https://huggingface.co/dominguesm/canarim-7b-vestibulaide](https://huggingface.co/dominguesm/canarim-7b-vestibulaide)}, 
-    title  = {Canarim 7B VestibulAide}, 
+@misc{Canarim7BVestibulAide,
+    url    = {[https://huggingface.co/dominguesm/canarim-7b-vestibulaide](https://huggingface.co/dominguesm/canarim-7b-vestibulaide)},
+    title  = {Canarim 7B VestibulAide},
     author = {DOMINGUES, M. F.}
 }
 ```
@@ -149,7 +170,7 @@ Agradeço a compreensão de todos os usuários do modelo e valorizo o feedback d
 
 ```bibtex
 @misc{touvron2023llama,
-      title={Llama 2: Open Foundation and Fine-Tuned Chat Models}, 
+      title={Llama 2: Open Foundation and Fine-Tuned Chat Models},
       author={Hugo Touvron and Louis Martin and Kevin Stone and Peter Albert and Amjad Almahairi and Yasmine Babaei and Nikolay Bashlykov and Soumya Batra and Prajjwal Bhargava and Shruti Bhosale and Dan Bikel and Lukas Blecher and Cristian Canton Ferrer and Moya Chen and Guillem Cucurull and David Esiobu and Jude Fernandes and Jeremy Fu and Wenyin Fu and Brian Fuller and Cynthia Gao and Vedanuj Goswami and Naman Goyal and Anthony Hartshorn and Saghar Hosseini and Rui Hou and Hakan Inan and Marcin Kardas and Viktor Kerkez and Madian Khabsa and Isabel Kloumann and Artem Korenev and Punit Singh Koura and Marie-Anne Lachaux and Thibaut Lavril and Jenya Lee and Diana Liskovich and Yinghai Lu and Yuning Mao and Xavier Martinet and Todor Mihaylov and Pushkar Mishra and Igor Molybog and Yixin Nie and Andrew Poulton and Jeremy Reizenstein and Rashi Rungta and Kalyan Saladi and Alan Schelten and Ruan Silva and Eric Michael Smith and Ranjan Subramanian and Xiaoqing Ellen Tan and Binh Tang and Ross Taylor and Adina Williams and Jian Xiang Kuan and Puxin Xu and Zheng Yan and Iliyan Zarov and Yuchen Zhang and Angela Fan and Melanie Kambadur and Sharan Narang and Aurelien Rodriguez and Robert Stojnic and Sergey Edunov and Thomas Scialom},
       year={2023},
       eprint={2307.09288},
