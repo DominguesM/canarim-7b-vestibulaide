@@ -2,9 +2,9 @@
 
 Para mais detalhes sobre o modelo, exemplos de teste de desempenho, conjunto de dados e processo de treinamento, visite: [**canar.im**](https://canar.im/) ou [**nlp.rocks**](https://nlp.rocks/).
 
-## Descrição do modelo
+## Descrição do Modelo
 
-`Canarim-7B-VestibulAide` é um modelo do tipo "decoder-only" com 7 bilhões de parâmetros, desenvolvido especialmente para lidar com perguntas, exercícios e respostas de questões de vestibulares brasileiros. O modelo foi ajustado para a **língua portuguesa** e tem como objetivo auxiliar estudantes na compreensão e resolução de questões complexas frequentemente presentes em vestibulares.
+`Canarim-7B-VestibulAide` é um modelo "apenas-decodificador" com 7 bilhões de parâmetros, projetado especificamente para lidar com perguntas, exercícios e respostas de vestibulares brasileiros. Adaptado para a **língua portuguesa**, seu objetivo é auxiliar os estudantes a compreender e resolver questões complexas comumente encontradas nesses exames.
 
 ## Uso
 
@@ -22,141 +22,95 @@ pipe = pipeline(
     device_map="auto",
 )
 
-instruction = "Abaixo está uma pergunta de uma prova. Escreva uma resposta que solucione adequadamente a questão.\n"
+mensagem_sistema = """Você é um assistente prestativo, respeitoso e honesto, especializado na análise de questões de múltipla escolha, juntamente com a opção considerada correta que sempre responde as perguntas na língua portuguesa. Você oferece uma resposta abrangente, detalhada e bem fundamentada, explicando por que a opção escolhida é a correta. Garanta a abordagem de todos os aspectos relevantes da questão e forneça uma justificativa sólida que exponha com clareza por que a opção selecionada é a resposta correta. Suas resoluções visam proporcionar um entendimento completo da questão, permitindo que os leitores compreendam plenamente o raciocínio subjacente à resposta correta."""
 
-# Questão retirada da prova de vestibular da UNESP 2023 (2º fase - questão 27)
-question = """
-Boric também disse que será duro com o narcotráfico e
-com a delinquência, e que dará atenção às regiões que
-estão em estado de exceção no norte e no sul do país.
-“Mas nunca nos esqueçamos, por favor, que todos são
-seres humanos”, referindo-se tanto a imigrantes ilegais
-que vêm causando conflitos com os moradores locais, no
-norte, como aos mapuche, “com quem temos dívidas
-históricas”.
-O presidente eleito pediu que o plebiscito que definirá a
-implementação ou não de uma nova Constituição seja
-“um grande momento de encontro”. [...]
-Parafraseou algumas das últimas palavras de Salvador
-Allende em seu último discurso antes de morrer,
-afirmando que “seguiremos caminhando pelas grandes
-alamedas por onde anda o homem livre para construir
-uma sociedade melhor”.
-   (Sylvia Colombo. “Boric toma posse como presidente do Chile e
-         cita Allende em discurso”. Folha de S.Paulo, 11.03.2022.)
+def criar_prompt(instrução):
+    return (
+        f"[INST] <<SYS>>\n{mensagem_sistema.strip()}\n<</SYS>>\n\n"
+        + instrução
+        + " [/INST] "
+    )
 
+pergunta = """
+É hoje a nossa festa nacional. O Brasil inteiro, da capital do Império à mais remota e insignificante de suas aldeolas, congrega-se unânime para comemorar o dia que o tirou dentre as nações dependentes para colocá-lo entre as nações soberanas, e entregou-lhes seus destinos, que até então haviam ficado a cargo de um povo estranho.
 
-A matéria jornalística sobre a posse de Gabriel Boric na
-presidência do Chile revela que o novo presidente
-a) defende princípios da Constituição promulgada
-   durante o regime militar chileno.
-b) reafirma o mito da relação harmoniosa entre brancos e
-   nativos sul-americanos.
-c) endossa a intolerância de parte expressiva da
-   população ao crescimento da imigração no país.
-d) associa-se ao recente avanço eleitoral da direita latino-
-   americana.
-e) pretende recuperar parte da tradição histórica de luta
-   dos socialistas chilenos.
+Gazeta de Notícias, 7 set.1883.
+
+As festividades em torno da Independência do Brasil marcam o nosso calendário desde os anos imediatamente posteriores ao de setembro de 1822. Essa comemoração está diretamente relacionada com:
+
+a) a construção e manutenção de símbolos para a formação de uma identidade nacional.
+b) o domínio da elite brasileira sobre os principais cargos políticos, que se efetivou logo após 1822.
+c) os interesses de senhores de terras que, após a Independência, exigiram a abolição da escravidão.
+d) o apoio popular às medidas tomadas pelo governo imperial para a expulsão de estrangeiros do país.
+e) a consciência da população sobre os seus direitos adquiridos posteriormente à transferência da Corte para o Rio de Janeiro.
 """
 
-sequences = pipe(
-    f"{instruction}###Pergunta\n{question}###Solução:\n",
-    do_sample=True,
-    num_return_sequences=1,
-    eos_token_id=tokenizer.eos_token_id,
-    max_length=1024,
-    temperature=0.9,
-    top_p=0.6,
-    repetition_penalty=1.15
+sequencias = pipe(
+   prompt,
+   do_sample=True,
+   num_return_sequences=1,
+   eos_token_id=tokenizer.eos_token_id,
+   max_length=2048,
+   temperature=0.9,
+   top_p=0.6,
+   repetition_penalty=1.15
 )
 
 ```
 
-Resposta do modelo:
+Resposta do Modelo:
 
 ```
-Resolução:
-
-O texto indica a admiração de Gabriel Boric pela
-construção política realizada pelo socialista salvadorado
-Salvador Allende, preso, assassinado e deposto no
-Regime Militar apoiado pelos EUA, liderado pelo coronel
-Pinochet. Assim, é possível concluir que o líder
-atual retoma as ideias e perspectivas desenvolvidas sob
-o governo anterior.
+Aqui está minha resposta à sua pergunta:
+A opção correta é (a) a construção e manutenção de símbolos para a formação de uma identidade nacional.
+A independência do Brasil foi um momento histórico fundamental para a formação da nação, pois representou a transição da fase colonial para a fase republicana. Para consolidar essa mudança e criar uma identificação nacional compartilhada, foram precisos símbolos e ativos culturais que expressassem a cultura, a história e os valores da nova nação. Assim, a construção e manutenção de símbolos como a Bandeira, o Hino Nacional, a Câmara Legislativa, entre outros, foi fundamental para a formação da identidade nacional brasileira. Além disso, esses símbolos também representam a liberdade e a soberania do país, o que é importante para a construção de uma nação forte e independente. Por isso, a opção (a) é a correta.
 ```
 
-## Conjunto de dados de treinamento
+## Conjunto de Dados de Treinamento
 
-Os dados utilizados para treinar o modelo consistem em uma ampla variedade de provas de vestibulares brasileiros, abrangendo vários anos e edições de mais de 15 vestibulares distintos. Essa coleção diversificada de dados de diferentes fontes proporciona uma compreensão abrangente das características e complexidade das questões de vestibulares ao longo do tempo. Cada conjunto de dados foi cuidadosamente processado e incorporado ao treinamento do modelo, garantindo representatividade das questões encontradas em vestibulares reais.
+Os dados usados para treinar o modelo consistem em uma ampla variedade de exames de vestibulares de universidades brasileiras e concursos públicos, abrangendo vários anos e edições de mais de 15 exames de vestibulares distintos e 50 concursos públicos. Essa coleção diversificada de dados de várias fontes proporciona uma compreensão abrangente das características e complexidade das questões de vestibulares ao longo do tempo. Cada conjunto de dados foi meticulosamente processado e incorporado ao treinamento do modelo, garantindo a representação de questões encontradas em exames de vestibulares reais.
 
-| Universidade   | Ano do Vestibular                    | Quantidade de Questões |
-| -------------- | ------------------------------------ | ---------------------- |
-| Fatec          | 2023, 2020, 2019, 2019 (+ 23 provas) | 1253                   |
-| Alberteinstein | 2023, 2019, 2016, 2016 (+ 5 provas)  | 385                    |
-| Unifesp        | 2023, 2023, 2019, 2019 (+ 36 provas) | 1255                   |
-| Famerp         | 2023, 2023, 2019, 2019 (+ 12 provas) | 659                    |
-| Famema         | 2023, 2019, 2018, 2022 (+ 2 provas)  | 199                    |
-| Unicamp        | 2023, 2023, 2023, 2021 (+ 74 provas) | 1637                   |
-| Pasusp         | 2009                                 | 46                     |
-| Fgv-sp         | 2020, 2019, 2019, 2018 (+ 57 provas) | 2699                   |
-| Fmabc          | 2023, 2018, 2022, 2021 (+ 1 provas)  | 365                    |
-| Mackenzie      | 2019, 2017, 2015, 2013 (+ 38 provas) | 1329                   |
-| Insper         | 2015, 2014, 2014, 2016 (+ 1 provas)  | 127                    |
-| Pucsp          | 2020, 2018, 2015, 2013 (+ 20 provas) | 1220                   |
-| Fuvest         | 2011, 2011, 2011, 2009 (+ 78 provas) | 2059                   |
-| Unip           | 2023, 2022                           | 90                     |
-| Ita            | 2015, 2015, 2015, 2015 (+ 27 provas) | 748                    |
-| Enem           | 2022, 2022, 2022, 2022 (+ 26 provas) | 2388                   |
-| Santacasa      | 2023, 2023, 2019, 2019 (+ 8 provas)  | 532                    |
-| Unesp          | 2002, 2002, 2012, 2010 (+ 17 provas) | 775                    |
-
-Para ver a lista completa dos anos e provas utilizadas, acesse a [lista completa de vestibulares]().
+Para ver a lista completa de anos e exames utilizados, acesse a [lista completa de exames de vestibulares](https://canar.im/).
 
 ## Desempenho
 
-O desempenho do modelo foi avaliado de duas formas: uma relacionada à capacidade de sugerir a alternativa correta e outra à eficácia da resolução na ajuda ao estudante a encontrar a alternativa correta em questões de múltipla escolha.
+O desempenho do modelo foi avaliado de duas maneiras: sua capacidade de sugerir a escolha correta (ENEM 2022 - Dia 1) e métricas como **ROUGE** e **BLEU**.
 
-### Sugestão de alternativa correta
+### ENEM 2022 - Dia 1
 
-A primeira métrica avalia a precisão do modelo na sugestão da alternativa correta em questões de múltipla escolha. Nesse contexto, o modelo é considerado bem-sucedido quando a alternativa segerida corresponde à alternativa correta da questão.
+A primeira métrica mede a precisão do modelo em sugerir a escolha correta em questões de múltipla escolha. Nesse caso, o modelo é considerado bem-sucedido quando a opção sugerida corresponde à resposta correta da questão.
 
-| Prova utilizada | Número total de questões analisadas | Acurácia |
-| --------------- | ----------------------------------- | -------- |
-| ENEM 2022       | 37                                  | 43 %     |
-| FATEC 2023      | 11                                  | 27%      |
+O desempenho do modelo foi avaliado por meio do teste **ENEM 2022 - Dia 1**, que consiste em 84 questões de múltipla escolha. A precisão do modelo em sugerir a escolha correta foi de 35,71%, com 30 de 84 questões respondidas corretamente.
 
-## Correspondência com a Resolução
+Os dados usados para derivar essa métrica podem ser encontrados em: [canarim-enem-22-test](https://huggingface.co/datasets/dominguesm/can
 
-A segunda métrica centra-se na correspondência entre a resolução gerada pelo modelo e a alternativa correta da questão. Isso inclui não apenas a resolução da questão, mas também a capacidade do modelo em fornecer explicações claras e úteis que permitam ao estudante compreender e chegar à alternativa correta. Essa métrica mede a eficácia da resolução gerada pelo modelo em auxiliar o estudante em todo o processo de compreensão e resolução da questão
+arim-enem2022-tests)
 
-| Prova utilizada | Número total de questões analisadas | Acurácia    |
-| --------------- | ----------------------------------- | ----------- |
-| ENEM 2022       | 77                                  | **75,32 %** |
-| FATEC 2023      | 49                                  | 59,18 %     |
+### ROUGE e BLEU
+
+WIP
 
 ## Uso e Limitações
 
-### Uso pretendido
+### Uso Pretendido
 
-Este modelo destina-se a estudantes que desejam aprimorar suas habilidades na resolução de questões de vestibulares. Pode ser utilizado das seguintes maneiras:
+Este modelo destina-se a estudantes que visam aprimorar suas habilidades na resolução de questões de vestibulares universitários. Ele pode ser usado das seguintes maneiras:
 
-1. **Geração de Resoluções**: O modelo é capaz de gerar resoluções passo a passo para questões específicas, auxiliando os estudantes a compreender o processo de resolução e os conceitos envolvidos.
+1. **Geração de Soluções**: O modelo pode produzir soluções passo a passo para questões específicas, auxiliando os estudantes a compreender o processo de resolução e os conceitos subjacentes.
 
-2. **Revisão e Estudo**: O modelo pode ser empregado para revisar e estudar diferentes tópicos abordados em questões de vestibulares, oferecendo explicações detalhadas quando necessário.
+2. **Revisão e Estudo**: O modelo pode ser usado para revisar e estudar vários tópicos abordados em questões de vestibulares, fornecendo explicações detalhadas quando necessário.
 
 ### Limitações
 
-O modelo apresenta um desempenho considerável na geração de resoluções, fornecendo explicações detalhadas sobre o processo de resolução de questões de vestibulares. No entanto, é importante notar que, atualmente, ele pode apresentar algumas limitações na sugestão da alternativa correta em questões que envolvem a escolha entre várias opções.
+O modelo se destaca na geração de soluções, oferecendo explicações detalhadas sobre o processo de solução de questões de vestibulares. No entanto, é importante ressaltar que ele pode atualmente ter algumas limitações em sugerir a opção correta em questões de múltipla escolha.
 
-A qualidade das sugestões para a alternativa correta pode nem sempre atender aos padrões desejados, podendo ocasionalmente resultar em respostas imprecisas ou inadequadas (mesmo quando a resolução/explicação está correta). É fundamental destacar que estou ciente dessas limitações e estou empenhado em aprimorar essa capacidade em versões futuras do modelo.
+A qualidade das sugestões para a escolha correta nem sempre pode atender aos padrões desejados, possivelmente resultando em respostas imprecisas ou inadequadas (mesmo quando a solução/explicação é precisa). É fundamental enfatizar que estou ciente dessas limitações e estou comprometido em aprimorar essa habilidade em futuras versões do modelo.
 
-Estou comprometido em investir tempo e esforço para melhorar a qualidade das sugestões das alternativas corretas, mas isso pode levar algum tempo. Por enquanto, o modelo pode ser utilizado para gerar resoluções e explicações detalhadas, porém é recomendado que o usuário verifique a alternativa correta por conta própria.
+Estou dedicado a investir tempo e esforço para melhorar a qualidade das sugestões para a opção correta, mas isso pode levar um tempo. Por enquanto, o modelo pode ser usado para gerar soluções e explicações detalhadas, mas é aconselhável que os usuários verifiquem a escolha correta de forma independente.
 
 Agradeço a compreensão de todos os usuários do modelo e valorizo o feedback de todos. Se você tiver alguma sugestão ou comentário, não hesite em entrar em contato comigo.
 
-## Como citar
+## Como Citar
 
 ```bibtex
 @misc{Canarim7BVestibulAide,
