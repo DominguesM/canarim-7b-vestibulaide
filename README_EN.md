@@ -22,53 +22,38 @@ pipe = pipeline(
     device_map="auto",
 )
 
-instruction = "Abaixo está uma pergunta de uma prova. Escreva uma resposta que solucione adequadamente a questão.\n"
+system_message = """Você é um assistente prestativo, respeitoso e honesto, especializado na análise de questões de múltipla escolha, juntamente com a opção considerada correta que sempre responde as perguntas na lingua portugues (portugues). Você oferece uma resposta abrangente, detalhada e bem fundamentada, explicando por que a opção escolhida é a correta. Garanta a abordagem de todos os aspectos relevantes da questão e forneça uma justificativa sólida que exponha com clareza por que a opção selecionada é a resposta correta. Suas resoluções visam proporcionar um entendimento completo da questão, permitindo que os leitores compreendam plenamente o raciocínio subjacente à resposta correta."""
 
-# Question from the 2023 UNESP University Entrance Exam (2nd phase - question 27)
+def make_prompt(instruction):
+    return (
+        f"[INST] <<SYS>>\n{system_message.strip()}\n<</SYS>>\n\n"
+        + instruction
+        + " [/INST] "
+    )
+
 question = """
-Boric também disse que será duro com o narcotráfico e
-com a delinquência, e que dará atenção às regiões que
-estão em estado de exceção no norte e no sul do país.
-“Mas nunca nos esqueçamos, por favor, que todos são
-seres humanos”, referindo-se tanto a imigrantes ilegais
-que vêm causando conflitos com os moradores locais, no
-norte, como aos mapuche, “com quem temos dívidas
-históricas”.
-O presidente eleito pediu que o plebiscito que definirá a
-implementação ou não de uma nova Constituição seja
-“um grande momento de encontro”. [...]
-Parafraseou algumas das últimas palavras de Salvador
-Allende em seu último discurso antes de morrer,
-afirmando que “seguiremos caminhando pelas grandes
-alamedas por onde anda o homem livre para construir
-uma sociedade melhor”.
-   (Sylvia Colombo. “Boric toma posse como presidente do Chile e
-         cita Allende em discurso”. Folha de S.Paulo, 11.03.2022.)
+É hoje a nossa festa nacional. O Brasil inteiro, da capital do Império à mais remota e insignificante de suas aldeolas, congrega-se unânime para comemorar o dia que o tirou dentre as nações dependentes para colocá-lo entre as nações soberanas, e entregou-lhes seus destinos, que até então haviam ficado a cargo de um povo estranho.
 
+Gazeta de Notícias, 7 set.1883.
 
-A matéria jornalística sobre a posse de Gabriel Boric na
-presidência do Chile revela que o novo presidente
-a) defende princípios da Constituição promulgada
-   durante o regime militar chileno.
-b) reafirma o mito da relação harmoniosa entre brancos e
-   nativos sul-americanos.
-c) endossa a intolerância de parte expressiva da
-   população ao crescimento da imigração no país.
-d) associa-se ao recente avanço eleitoral da direita latino-
-   americana.
-e) pretende recuperar parte da tradição histórica de luta
-   dos socialistas chilenos.
+As festividades em torno da Independência do Brasil marcam o nosso calendário desde os anos imediatamente posteriores ao de setembro de 1822. Essa comemoração está diretamente relacionada com:
+
+a) a construção e manutenção de símbolos para a formação de uma identidade nacional.
+b) o domínio da elite brasileira sobre os principais cargos políticos, que se efetivou logo após 1822.
+c) os interesses de senhores de terras que, após a Independência, exigiram a abolição da escravidão.
+d) o apoio popular às medidas tomadas pelo governo imperial para a expulsão de estrangeiros do país.
+e) a consciência da população sobre os seus direitos adquiridos posteriormente à transferência da Corte para o Rio de Janeiro.
 """
 
 sequences = pipe(
-    f"{instruction}###Pergunta\n{question}###Solução:\n",
-    do_sample=True,
-    num_return_sequences=1,
-    eos_token_id=tokenizer.eos_token_id,
-    max_length=1024,
-    temperature=0.9,
-    top_p=0.6,
-    repetition_penalty=1.15
+   prompt,
+   do_sample=True,
+   num_return_sequences=1,
+   eos_token_id=tokenizer.eos_token_id,
+   max_length=2048,
+   temperature=0.9,
+   top_p=0.6,
+   repetition_penalty=1.15
 )
 
 ```
@@ -76,65 +61,32 @@ sequences = pipe(
 Model's Answer:
 
 ```
-Resolução:
-
-O texto indica a admiração de Gabriel Boric pela
-construção política realizada pelo socialista salvadorado
-Salvador Allende, preso, assassinado e deposto no
-Regime Militar apoiado pelos EUA, liderado pelo coronel
-Pinochet. Assim, é possível concluir que o líder
-atual retoma as ideias e perspectivas desenvolvidas sob
-o governo anterior.
+Aqui está minha resposta à sua pergunta:
+A opção correta é (a) a construção e manutenção de símbolos para a formação de uma identidade nacional.
+A independência do Brasil foi um momento histórico fundamental para a formação da nação, pois representou a transição da fase colonial para a fase republicana. Para consolidar essa mudança e criar uma identificação nacional compartilhada, foram precisos símbolos e ativos culturais que expressassem a cultura, a história e as valores da nova nação. Assim, a construção e manutenção de símbolos como a Bandeira, o Hino Nacional, a Câmara Legislativa, entre outros, foi fundamental para a formação da identidade nacional brasileira. Além disso, esses símbolos também representam a liberdade e a soberania do país, o que é importante para a construção de uma nação forte e independente. Por isso, a opção (a) é a correta.
 ```
 
 ## Training Data Set
 
-The data used to train the model consists of a wide range of Brazilian university entrance exams, spanning multiple years and editions from over 15 distinct entrance exams. This diverse data collection from different sources provides a comprehensive understanding of the characteristics and complexity of entrance exam questions over time. Each data set was meticulously processed and incorporated into the model's training, ensuring representation of questions found in actual entrance exams.
+The data used to train the model consists of a wide range of entrance exams from Brazilian universities and public competitions, spanning multiple years and editions of over 15 distinct entrance exams and 50 public contests. This diversified collection of data from various sources provides a comprehensive understanding of the characteristics and complexity of entrance exam questions over time. Each dataset was meticulously processed and incorporated into the model's training, ensuring the representation of questions found in actual entrance exams.
 
-| University     | Exam Year                           | Number of Questions |
-| -------------- | ----------------------------------- | ------------------- |
-| Fatec          | 2023, 2020, 2019, 2019 (+ 23 exams) | 1253                |
-| Alberteinstein | 2023, 2019, 2016, 2016 (+ 5 exams)  | 385                 |
-| Unifesp        | 2023, 2023, 2019, 2019 (+ 36 exams) | 1255                |
-| Famerp         | 2023, 2023, 2019, 2019 (+ 12 exams) | 659                 |
-| Famema         | 2023, 2019, 2018, 2022 (+ 2 exams)  | 199                 |
-| Unicamp        | 2023, 2023, 2023, 2021 (+ 74 exams) | 1637                |
-| Pasusp         | 2009                                | 46                  |
-| Fgv-sp         | 2020, 2019, 2019, 2018 (+ 57 exams) | 2699                |
-| Fmabc          | 2023, 2018, 2022, 2021 (+ 1 exams)  | 365                 |
-| Mackenzie      | 2019, 2017, 2015, 2013 (+ 38 exams) | 1329                |
-| Insper         | 2015, 2014, 2014, 2016 (+ 1 exams)  | 127                 |
-| Pucsp          | 2020, 2018, 2015, 2013 (+ 20 exams) | 1220                |
-| Fuvest         | 2011, 2011, 2011, 2009 (+ 78 exams) | 2059                |
-| Unip           | 2023, 2022                          | 90                  |
-| Ita            | 2015, 2015, 2015, 2015 (+ 27 exams) | 748                 |
-| Enem           | 2022, 2022, 2022, 2022 (+ 26 exams) | 2388                |
-| Santacasa      | 2023, 2023, 2019, 2019 (+ 8 exams)  | 532                 |
-| Unesp          | 2002, 2002, 2012, 2010 (+ 17 exams) | 775                 |
-
-To view the complete list of years and exams used, access the [full list of entrance exams]().
+To view the complete list of years and exams used, access the [full list of entrance exams](https://canar.im/).
 
 ## Performance
 
-The model's performance was assessed in two ways: its ability to suggest the correct choice and its effectiveness in aiding students to identify the correct answer in multiple-choice questions.
+The model's performance was evaluated in two ways: its ability to suggest the correct choice (ENEM 2022 - Day 1) and metrics such as **ROUGE** and **BLEU**.
 
-### Correct Choice Suggestion
+### ENEM 2022 - Day 1
 
-The first metric gauges the model's accuracy in suggesting the correct choice in multiple-choice queries. Here, the model is deemed successful when its suggested option matches the question's correct answer.
+The first metric measures the model's accuracy in suggesting the correct choice in multiple-choice queries. Here, the model is deemed successful when the suggested option corresponds to the correct answer to the question.
 
-| Test Used  | Total Questions Reviewed | Accuracy |
-| ---------- | ------------------------ | -------- |
-| ENEM 2022  | 37                       | 43%      |
-| FATEC 2023 | 11                       | 27%      |
+The model's performance was evaluated through the **ENEM 2022 - Day 1** test, which consists of 84 multiple-choice questions. The model's accuracy in suggesting the correct choice was 35.71%, with 30 out of 84 questions answered correctly.
 
-## Solution Matching
+The data used to derive this metric can be found at: [canarim-enem-22-test](https://huggingface.co/datasets/dominguesm/canarim-enem2022-tests)
 
-The second metric focuses on the alignment between the model's generated solution and the question's correct choice. This covers not just the question's solution but also the model's capacity to provide clear, helpful explanations, allowing students to understand and pinpoint the correct answer. This metric measures the efficacy of the model's generated solution in assisting the student throughout the entire comprehension and problem-solving process.
+### ROUGE and BLEU
 
-| Test Used  | Total Questions Reviewed | Accuracy   |
-| ---------- | ------------------------ | ---------- |
-| ENEM 2022  | 77                       | **75.32%** |
-| FATEC 2023 | 49                       | 59.18%     |
+WIP
 
 ## Use and Limitations
 
